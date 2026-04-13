@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Space Grotesk', system-ui, sans-serif;
+  --color-primary: #18181B;
+  --color-secondary: #3F3F46;
+  --color-cta: #2563EB;
+  --color-background: #09090B;
+  --color-text: #FAFAFA;
+  --color-neon-blue: #00f3ff;
+  --color-neon-purple: #9d00ff;
+  --color-neon-green: #00ff9d;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text font-body;
+    background-color: #09090B;
+    color: #FAFAFA;
+    margin: 0;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  }
+  
+  .neon-glow-blue {
+    box-shadow: 0 0 15px 2px rgba(0, 243, 255, 0.2);
+  }
+  .neon-glow-purple {
+    box-shadow: 0 0 15px 2px rgba(157, 0, 255, 0.2);
+  }
+  .neon-glow-green {
+    box-shadow: 0 0 15px 2px rgba(0, 255, 157, 0.2);
+  }
+}
