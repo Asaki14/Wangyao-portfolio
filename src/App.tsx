@@ -1,10 +1,27 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, ArrowUpRight, Mail, Phone, Download } from 'lucide-react';
+import { useState } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { ArrowRight, ArrowUpRight, Mail, Phone, Download, TerminalSquare, Zap, Network, Flame, ChevronDown } from 'lucide-react';
+
+const faqs = [
+  {
+    q: "资源有限时，如何进行需求评估与优先级排序？",
+    a: "坚持三维评估：1. 用户导向优先（锁定留存与粘性，提升核心体验）；2. 市场前瞻性考察（评估市场验证潜力与商业化意愿）；3. 可实现性兜底（在资源约束下灵活调度，寻求最优解）。"
+  },
+  {
+    q: "如何平衡业务目标（商业变现）与极致的用户体验？",
+    a: "体验为基，商业为翼。始终将用户体验置于首位，因为留存是未来一切可能性的前提。在保障体验底线后，再精准发力业务目标。这是项目长远发展并在残酷市场中存活的唯一基石。"
+  },
+  {
+    q: "评审或开发中产生较大分歧，如何推进与解决？",
+    a: "采取“正式会议 + 颗粒度对齐”机制。召集各部门代表坦诚相见，合盘托出需求与资源限制；进行多轮细节探讨，对齐颗粒度并寻找折中方案。在协调各方诉求的前提下，推动项目拿到能力范围内的最佳结果。"
+  }
+];
 
 function App() {
   const { scrollYProgress } = useScroll();
   
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   return (
     <div className="min-h-screen bg-[#09090B] text-[#FAFAFA] font-['Space_Grotesk'] overflow-hidden selection:bg-[#00f3ff] selection:text-black">
@@ -19,9 +36,11 @@ function App() {
       <nav className="fixed top-0 left-0 right-0 z-50 py-6 px-8 md:px-16 flex justify-between items-center mix-blend-difference">
         <span className="font-['Archivo'] font-bold text-xl tracking-tighter">WANG<span className="text-[#00f3ff]">YAO</span></span>
         <div className="flex gap-6 text-sm font-medium tracking-wide hidden md:flex">
+          <a href="#about" className="hover:text-[#00ff9d] transition-colors">关于我</a>
+          <a href="#arsenal" className="hover:text-[#f43f5e] transition-colors">工具库</a>
           <a href="#works" className="hover:text-[#00f3ff] transition-colors">核心作品</a>
           <a href="#experience" className="hover:text-[#9d00ff] transition-colors">实习与经历</a>
-          <a href="#about" className="hover:text-[#00ff9d] transition-colors">关于我</a>
+          <a href="#philosophy" className="hover:text-[#00f3ff] transition-colors">产品思考</a>
           <a href="#contact" className="hover:text-white transition-colors">联系方式</a>
         </div>
       </nav>
@@ -71,6 +90,221 @@ function App() {
               />
             </div>
           </motion.div>
+        </section>
+
+        {/* ABOUT & EXPERTISE */}
+        <section id="about" className="w-full max-w-7xl px-8 md:px-16 py-32">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+            <div>
+              <h2 className="font-['Archivo'] text-4xl md:text-5xl font-bold tracking-tighter mb-12">THE <span className="text-zinc-500">ENGINE.</span></h2>
+              
+              <div className="space-y-12">
+                <div className="relative pl-8 border-l border-zinc-800">
+                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#9d00ff]" />
+                  <h4 className="text-xl font-bold mb-2">AI 产品力</h4>
+                  <p className="text-zinc-400 leading-relaxed">熟练使用 Opencode / Claude Code / Codex 等先进 AI 编程工具，具备独立构建现代化 Web 应用的全栈开发能力，掌握 Multiagents 敏捷协作的标准化开发 SOP。</p>
+                </div>
+                
+                <div className="relative pl-8 border-l border-zinc-800">
+                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#00f3ff]" />
+                  <h4 className="text-xl font-bold mb-2">增长闭环与商业化体验</h4>
+                  <p className="text-zinc-400 leading-relaxed">具备将 SaaS 产品从 0 到 1 成功跑通商业变现链路的实战经验。擅长利用小红书等社交媒体平台进行低成本流量获取，在半月内达成 130+ 订单付费转化的裂变实验。</p>
+                </div>
+
+                <div className="relative pl-8 border-l border-zinc-800">
+                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#00ff9d]" />
+                  <h4 className="text-xl font-bold mb-2">专业背景与金融思维</h4>
+                  <p className="text-zinc-400 leading-relaxed">西南财经大学金融硕士在读 (GPA 3.9/5)。具备严谨的量化数据分析与风险控制思维，能运用深度的行业研究方法论驱动产品决策。</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="glass-card p-10 flex flex-col justify-center">
+              <h3 className="font-['Archivo'] text-2xl font-bold mb-8">教育与荣誉</h3>
+              
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between items-start mb-1">
+                    <h5 className="font-bold text-lg">西南财经大学 - 金融学院</h5>
+                    <span className="text-zinc-500 font-mono text-sm">2024 - 至今</span>
+                  </div>
+                  <p className="text-[#c084fc]">信用管理 硕士研究生</p>
+                </div>
+
+                <div className="h-[1px] w-full bg-zinc-800" />
+
+                <div>
+                  <div className="flex justify-between items-start mb-1">
+                    <h5 className="font-bold text-lg">西南财经大学 - 金融学院</h5>
+                    <span className="text-zinc-500 font-mono text-sm">2020 - 2024</span>
+                  </div>
+                  <p className="text-zinc-400">金融学 本科 • 学业成绩 GPA: 3.9/5</p>
+                </div>
+                
+                <div className="pt-4">
+                  <p className="text-sm text-zinc-500 leading-relaxed">
+                    <span className="text-zinc-300">荣誉奖项:</span> 创新创业奖学金 • 国家励志奖学金 • 研究生学业奖学金 • 三好学生 • 优秀研究生
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* THE ARSENAL (Toolstack Bento Box) */}
+        <section id="arsenal" className="w-full max-w-7xl px-8 md:px-16 py-32 border-t border-white/5">
+          <div className="flex flex-col mb-16">
+            <h2 className="font-['Archivo'] text-4xl md:text-5xl font-bold tracking-tighter mb-4">THE <span className="text-zinc-500">ARSENAL.</span></h2>
+            <p className="text-zinc-400 font-mono">全栈技能图谱与工作流</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* 1. Idea & Prototyping */}
+            <div className="glass-card p-8 group hover:border-[#9d00ff]/40 transition-colors relative overflow-hidden flex flex-col">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#9d00ff]/10 rounded-full blur-[50px] pointer-events-none" />
+               <h3 className="text-[#9d00ff] font-bold mb-8 flex items-center gap-2 text-lg"><Zap size={20} /> 构思与原型</h3>
+               <div className="space-y-8 relative z-10 flex-grow">
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/obsidian/7B61FF" alt="Obsidian" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Obsidian</p>
+                     <p className="text-xs text-zinc-500 mt-1">知识库与灵感生发</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="/icons/Stitch.png" alt="Stitch" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Stitch</p>
+                     <p className="text-xs text-zinc-500 mt-1">产品原型落地</p>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+            {/* 2. MVP & Implementation */}
+            <div className="glass-card p-8 group hover:border-[#00f3ff]/40 transition-colors relative overflow-hidden flex flex-col">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#00f3ff]/10 rounded-full blur-[50px] pointer-events-none" />
+               <h3 className="text-[#00f3ff] font-bold mb-8 flex items-center gap-2 text-lg"><TerminalSquare size={20} /> 落地实现</h3>
+               <div className="space-y-8 relative z-10 flex-grow">
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="/icons/Opencode.png" alt="OpenCode" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform neon-glow-blue" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">OpenCode</p>
+                     <p className="text-xs text-zinc-500 mt-1">主力终端开发环境</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="/icons/Codex.png" alt="Codex" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Codex</p>
+                     <p className="text-xs text-zinc-500 mt-1">代码生成与辅助</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/anthropic/D1ABA1" alt="Claude Code" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Claude Code</p>
+                     <p className="text-xs text-zinc-500 mt-1">思路验证与迭代</p>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+            {/* 3. Deploy & Operation */}
+            <div className="glass-card p-8 group hover:border-[#00ff9d]/40 transition-colors relative overflow-hidden flex flex-col">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ff9d]/10 rounded-full blur-[50px] pointer-events-none" />
+               <h3 className="text-[#00ff9d] font-bold mb-8 flex items-center gap-2 text-lg"><Network size={20} /> 部署与上线</h3>
+               <div className="space-y-8 relative z-10 flex-grow">
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/github/FFFFFF" alt="GitHub" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">GitHub</p>
+                     <p className="text-xs text-zinc-500 mt-1">代码托管与版本控制</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="Vercel" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Vercel</p>
+                     <p className="text-xs text-zinc-500 mt-1">云端一键极速部署</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/alibabacloud/FF6A00" alt="Aliyun" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Aliyun</p>
+                     <p className="text-xs text-zinc-500 mt-1">云端服务器与域名</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg group-hover/item:bg-white/10 transition-colors">
+                     <img src="https://cdn.simpleicons.org/cloudflare/F38020" alt="Cloudflare" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Cloudflare</p>
+                     <p className="text-xs text-zinc-500 mt-1">DNS 解析与加速防护</p>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+            {/* 4. AI Workflows */}
+            <div className="glass-card p-8 group hover:border-[#f43f5e]/40 transition-colors relative overflow-hidden lg:col-span-1 md:col-span-2 flex flex-col">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-[#f43f5e]/10 rounded-full blur-[50px] pointer-events-none" />
+               <h3 className="text-[#f43f5e] font-bold mb-8 flex items-center gap-2 text-lg"><Flame size={20} /> 核心工作流</h3>
+               <div className="space-y-6 relative z-10 flex-grow">
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-yellow-500/10 text-yellow-400 rounded-lg">
+                     <Zap size={20} strokeWidth={2} className="group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Superpowers</p>
+                     <p className="text-xs text-zinc-500 mt-1">基于 Skills 的能力赋能流</p>
+                   </div>
+                 </div>
+                 <div className="flex items-center gap-4 group/item">
+                   <div className="w-10 h-10 flex items-center justify-center bg-purple-500/10 text-purple-400 rounded-lg">
+                     <Network size={20} strokeWidth={2} className="group-hover/item:scale-110 transition-transform" />
+                   </div>
+                   <div>
+                     <p className="font-bold text-zinc-200">Everything Claude</p>
+                     <p className="text-xs text-zinc-500 mt-1">基于 Subagent 的协作网络</p>
+                   </div>
+                 </div>
+                 
+                 <div className="mt-6">
+                   <div className="p-5 rounded-xl border border-[#f43f5e]/30 bg-[#f43f5e]/10 group/highlight hover:bg-[#f43f5e]/20 transition-all duration-300 relative overflow-hidden">
+                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover/highlight:translate-x-full transition-transform duration-1000 ease-in-out" />
+                     <div className="flex items-center gap-3 mb-3 relative z-10">
+                       <Flame className="text-[#f43f5e] animate-pulse" size={20} />
+                       <p className="font-bold text-[#f43f5e] tracking-wide">Get-shit-done</p>
+                     </div>
+                     <p className="text-xs text-zinc-300 leading-relaxed relative z-10">
+                       复合型最强工作流，深度融合 Skills 与 Subagents，专为长期复杂项目的敏捷开发与维护打造。
+                     </p>
+                   </div>
+                 </div>
+               </div>
+            </div>
+
+          </div>
         </section>
 
         {/* SELECTED WORKS (BENTO GRID) */}
@@ -289,62 +523,52 @@ function App() {
           </div>
         </section>
 
-        {/* ABOUT & EXPERTISE */}
-        <section id="about" className="w-full max-w-7xl px-8 md:px-16 py-32">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
-            <div>
-              <h2 className="font-['Archivo'] text-4xl md:text-5xl font-bold tracking-tighter mb-12">THE <span className="text-zinc-500">ENGINE.</span></h2>
-              
-              <div className="space-y-12">
-                <div className="relative pl-8 border-l border-zinc-800">
-                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#9d00ff]" />
-                  <h4 className="text-xl font-bold mb-2">AI 产品力</h4>
-                  <p className="text-zinc-400 leading-relaxed">熟练使用 Opencode / Claude Code / Codex 等先进 AI 编程工具，具备独立构建现代化 Web 应用的全栈开发能力，掌握 Multiagents 敏捷协作的标准化开发 SOP。</p>
-                </div>
-                
-                <div className="relative pl-8 border-l border-zinc-800">
-                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#00f3ff]" />
-                  <h4 className="text-xl font-bold mb-2">增长闭环与商业化体验</h4>
-                  <p className="text-zinc-400 leading-relaxed">具备将 SaaS 产品从 0 到 1 成功跑通商业变现链路的实战经验。擅长利用小红书等社交媒体平台进行低成本流量获取，在半月内达成 130+ 订单付费转化的裂变实验。</p>
-                </div>
+        {/* PM PHILOSOPHY */}
+        <section id="philosophy" className="w-full max-w-7xl px-8 md:px-16 py-32 border-t border-white/5">
+          <div className="flex flex-col mb-16">
+            <h2 className="font-['Archivo'] text-4xl md:text-5xl font-bold tracking-tighter mb-4">PM <span className="text-zinc-500">PHILOSOPHY.</span></h2>
+            <p className="text-zinc-400 font-mono">产品方法论与思考</p>
+          </div>
 
-                <div className="relative pl-8 border-l border-zinc-800">
-                  <div className="absolute top-0 left-0 w-3 h-3 -translate-x-[6.5px] rounded-full bg-[#00ff9d]" />
-                  <h4 className="text-xl font-bold mb-2">专业背景与金融思维</h4>
-                  <p className="text-zinc-400 leading-relaxed">西南财经大学金融硕士在读 (GPA 3.9/5)。具备严谨的量化数据分析与风险控制思维，能运用深度的行业研究方法论驱动产品决策。</p>
+          <div className="flex flex-col gap-4">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div 
+                  key={idx} 
+                  className={`glass-card rounded-2xl overflow-hidden transition-all duration-300 border ${isOpen ? 'border-[#00f3ff]/40 bg-white/[0.03]' : 'border-white/5 hover:border-white/10'}`}
+                >
+                  <button 
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer outline-none"
+                  >
+                    <span className="font-bold text-lg md:text-xl pr-8">{faq.q}</span>
+                    <motion.div 
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full ${isOpen ? 'bg-[#00f3ff]/20 text-[#00f3ff]' : 'bg-white/5 text-zinc-400'}`}
+                    >
+                      <ChevronDown size={18} />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <div className="px-6 md:px-8 pb-8 pt-0 text-zinc-400 leading-relaxed">
+                          <div className="w-full h-[1px] bg-white/5 mb-6" />
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
-              </div>
-            </div>
-
-            <div className="glass-card p-10 flex flex-col justify-center">
-              <h3 className="font-['Archivo'] text-2xl font-bold mb-8">教育与荣誉</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-start mb-1">
-                    <h5 className="font-bold text-lg">西南财经大学 - 金融学院</h5>
-                    <span className="text-zinc-500 font-mono text-sm">2024 - 至今</span>
-                  </div>
-                  <p className="text-[#c084fc]">信用管理 硕士研究生</p>
-                </div>
-
-                <div className="h-[1px] w-full bg-zinc-800" />
-
-                <div>
-                  <div className="flex justify-between items-start mb-1">
-                    <h5 className="font-bold text-lg">西南财经大学 - 金融学院</h5>
-                    <span className="text-zinc-500 font-mono text-sm">2020 - 2024</span>
-                  </div>
-                  <p className="text-zinc-400">金融学 本科 • 学业成绩 GPA: 3.9/5</p>
-                </div>
-                
-                <div className="pt-4">
-                  <p className="text-sm text-zinc-500 leading-relaxed">
-                    <span className="text-zinc-300">荣誉奖项:</span> 创新创业奖学金 • 国家励志奖学金 • 研究生学业奖学金 • 三好学生 • 优秀研究生
-                  </p>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </section>
 
