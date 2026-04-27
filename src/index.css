@@ -3,42 +3,68 @@
 @theme {
   --font-heading: 'Archivo', system-ui, sans-serif;
   --font-body: 'Space Grotesk', system-ui, sans-serif;
-  --color-primary: #18181B;
-  --color-secondary: #3F3F46;
-  --color-cta: #2563EB;
-  --color-background: #09090B;
-  --color-text: #FAFAFA;
-  --color-neon-blue: #00f3ff;
-  --color-neon-purple: #9d00ff;
-  --color-neon-green: #00ff9d;
+  --font-dot: 'DotGothic16', monospace;
+  --color-primary: #1A1A1A;
+  --color-secondary: #4A4A4A;
+  --color-accent-red: #E53935;
+  --color-background: #F5F4F0;
+  --color-text: #1A1A1A;
+  --color-border: #E5E5E5;
 }
 
 @layer base {
   body {
-    @apply bg-background text-text font-body;
-    background-color: #09090B;
-    color: #FAFAFA;
+    background-color: #F5F4F0;
+    color: #1A1A1A;
     margin: 0;
     min-height: 100vh;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    font-family: 'Archivo', system-ui, sans-serif;
   }
 }
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 12px;
+    box-shadow: 4px 4px 0px 0px rgba(26,26,26,0.1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card-hover:hover {
+    box-shadow: 6px 6px 0px 0px rgba(229,57,53,1);
+    transform: translate(-2px, -2px);
+    border-color: rgba(229,57,53,0.5);
+  }
+
+  .bg-dotted-grid {
+    background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .bg-crosshair-grid {
+    background-image: 
+      linear-gradient(to right, #d4d4d4 1px, transparent 1px),
+      linear-gradient(to bottom, #d4d4d4 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    opacity: 0.5;
+  }
+
+  .chamfered-badge {
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
   }
   
-  .neon-glow-blue {
-    box-shadow: 0 0 15px 2px rgba(0, 243, 255, 0.2);
+  .font-dot {
+    font-family: 'DotGothic16', monospace;
   }
-  .neon-glow-purple {
-    box-shadow: 0 0 15px 2px rgba(157, 0, 255, 0.2);
-  }
-  .neon-glow-green {
-    box-shadow: 0 0 15px 2px rgba(0, 255, 157, 0.2);
+
+  .nav-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(245, 244, 240, 0.7);
   }
 }
