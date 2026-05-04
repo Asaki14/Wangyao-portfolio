@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useState, type MouseEvent, type ReactNode } from 'react';
+import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Mail, Phone, Download, TerminalSquare, Zap, Network, Flame, ChevronDown } from 'lucide-react';
 
 const faqs = [
@@ -16,6 +16,222 @@ const faqs = [
     a: "采取“正式会议 + 颗粒度对齐”机制。召集各部门代表坦诚相见，合盘托出需求与资源限制；进行多轮细节探讨，对齐颗粒度并寻找折中方案。在协调各方诉求的前提下，推动项目拿到能力范围内的最佳结果。"
   }
 ];
+
+const motionPresets = {
+  easeOut: [0.16, 1, 0.3, 1] as const,
+  viewport: { once: true, margin: "-70px" },
+  spring: { type: "spring" as const, stiffness: 120, damping: 22 },
+  softSpring: { type: "spring" as const, stiffness: 180, damping: 26 },
+};
+
+const revealContainer = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.09,
+      delayChildren: 0.08,
+    },
+  },
+};
+
+const revealItem = {
+  hidden: { opacity: 0, y: 28 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: motionPresets.spring,
+  },
+};
+
+type ToolItem = {
+  name: string;
+  description: string;
+  icon?: ReactNode;
+  image?: string;
+  alt?: string;
+  imageClassName?: string;
+};
+
+type ArsenalCard = {
+  title: string;
+  phase: string;
+  titleIcon: ReactNode;
+  items: ToolItem[];
+  featured?: {
+    title: string;
+    label: string;
+    description: ReactNode;
+  };
+  className?: string;
+  grid?: boolean;
+};
+
+const arsenalCards: ArsenalCard[] = [
+  {
+    title: "构思与原型",
+    phase: "PHASE.01",
+    titleIcon: <Zap size={20} className="text-[#E53935]" />,
+    items: [
+      { name: "Obsidian", description: "知识库与灵感生发", image: "https://cdn.simpleicons.org/obsidian/1A1A1A", alt: "Obsidian" },
+      { name: "Stitch", description: "产品原型落地", image: "/icons/Stitch.png", alt: "Stitch", imageClassName: "object-contain grayscale contrast-200" },
+    ],
+  },
+  {
+    title: "落地实现",
+    phase: "PHASE.02",
+    titleIcon: <TerminalSquare size={20} className="text-[#E53935]" />,
+    items: [
+      { name: "OpenCode", description: "主力终端开发环境", image: "/icons/Opencode.png", alt: "OpenCode", imageClassName: "object-contain drop-shadow-sm grayscale contrast-200" },
+      { name: "Codex", description: "代码生成与辅助", image: "/icons/Codex.png", alt: "Codex", imageClassName: "object-contain grayscale contrast-200" },
+      { name: "Claude Code", description: "思路验证与迭代", image: "https://cdn.simpleicons.org/anthropic/1A1A1A", alt: "Claude Code" },
+    ],
+  },
+  {
+    title: "部署与上线",
+    phase: "PHASE.03",
+    titleIcon: <Network size={20} className="text-[#E53935]" />,
+    items: [
+      { name: "GitHub", description: "代码托管与版本控制", image: "https://cdn.simpleicons.org/github/1A1A1A", alt: "GitHub" },
+      { name: "Vercel", description: "云端一键极速部署", image: "https://cdn.simpleicons.org/vercel/1A1A1A", alt: "Vercel" },
+      { name: "Aliyun", description: "云端服务器与域名", image: "https://cdn.simpleicons.org/alibabacloud/1A1A1A", alt: "Aliyun" },
+    ],
+  },
+  {
+    title: "核心工作流",
+    phase: "ENGINE.CORE",
+    titleIcon: <Flame size={20} className="text-[#E53935]" />,
+    className: "lg:col-span-1 md:col-span-2",
+    grid: true,
+    items: [
+      { name: "Superpowers", description: "基于 Skills 的能力赋能流", icon: <Zap size={20} strokeWidth={2} /> },
+      { name: "Everything Claude", description: "基于 Subagent 的协作网络", icon: <Network size={20} strokeWidth={2} /> },
+    ],
+    featured: {
+      title: "Get-shit-done",
+      label: "SYNERGY.SYS",
+      description: (
+        <>
+          复合型最强工作流，深度融合 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Skills</span> 与 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
+        </>
+      ),
+    },
+  },
+];
+
+function ToolStackItem({ item }: { item: ToolItem }) {
+  return (
+    <motion.div
+      className="group/item flex cursor-pointer items-center gap-4"
+      whileHover={{ x: 4 }}
+      transition={motionPresets.softSpring}
+    >
+      <motion.div
+        className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-600 shadow-sm transition-colors group-hover/item:border-[#E53935] group-hover/item:text-[#E53935]"
+        whileHover={{ scale: 1.08, rotate: -3 }}
+        transition={motionPresets.softSpring}
+      >
+        <span className="absolute inset-x-2 top-0 h-px bg-[#E53935]/0 transition-colors group-hover/item:bg-[#E53935]/70" />
+        {item.image ? (
+          <img src={item.image} alt={item.alt ?? item.name} className={`h-6 w-6 ${item.imageClassName ?? ""}`} />
+        ) : (
+          item.icon
+        )}
+      </motion.div>
+      <div>
+        <p className="font-bold text-zinc-900 transition-colors group-hover/item:text-[#E53935]">{item.name}</p>
+        <p className="mt-1 text-xs font-medium text-zinc-500">{item.description}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+function ArsenalMotionCard({ card }: { card: ArsenalCard }) {
+  const shouldReduceMotion = useReducedMotion();
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const glareX = useMotionValue(50);
+  const glareY = useMotionValue(50);
+  const springRotateX = useSpring(rotateX, { stiffness: 160, damping: 22 });
+  const springRotateY = useSpring(rotateY, { stiffness: 160, damping: 22 });
+  const glareBackground = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, rgba(229,57,53,0.16), rgba(255,255,255,0.08) 28%, transparent 58%)`;
+
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (shouldReduceMotion) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+
+    rotateX.set((0.5 - y) * 7);
+    rotateY.set((x - 0.5) * 9);
+    glareX.set(x * 100);
+    glareY.set(y * 100);
+  };
+
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+    glareX.set(50);
+    glareY.set(50);
+  };
+
+  return (
+    <motion.div
+      variants={revealItem}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={shouldReduceMotion ? undefined : { y: -6, boxShadow: "10px 10px 0px 0px rgba(229,57,53,0.95)" }}
+      transition={motionPresets.softSpring}
+      style={{ rotateX: springRotateX, rotateY: springRotateY, transformPerspective: 900 }}
+      className={`glass-card p-8 relative flex flex-col overflow-hidden group/card motion-safe:will-change-transform ${card.className ?? ""}`}
+    >
+      {card.grid && <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-30 pointer-events-none" />}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
+        style={{ background: glareBackground }}
+      />
+      <div className="pointer-events-none absolute left-4 top-4 h-2 w-2 bg-[#E53935]/0 transition-colors group-hover/card:bg-[#E53935]" />
+      <div className="pointer-events-none absolute bottom-4 right-4 h-2 w-2 bg-[#1A1A1A]/0 transition-colors group-hover/card:bg-[#1A1A1A]" />
+
+      <h3 className="relative z-10 mb-8 flex items-center justify-between text-lg font-black uppercase text-[#1A1A1A] font-['Archivo']">
+        <div className="flex items-center gap-2">{card.titleIcon} {card.title}</div>
+        <span className="text-xs font-dot text-zinc-400">{card.phase}</span>
+      </h3>
+
+      <div className="relative z-10 flex-grow space-y-6">
+        {card.items.map((item, idx) => (
+          <div key={item.name}>
+            {idx > 0 && <div className="mb-6 w-full border-t border-dashed border-zinc-200" />}
+            <ToolStackItem item={item} />
+          </div>
+        ))}
+
+        {card.featured && (
+          <div className="mt-8 pt-4">
+            <motion.div
+              className="group/highlight relative overflow-hidden rounded-xl border-2 border-[#1A1A1A] bg-zinc-50 p-6 transition-colors hover:border-[#E53935]"
+              whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(229,57,53,1)" }}
+              transition={motionPresets.softSpring}
+            >
+              <div className="absolute right-0 top-0 h-16 w-16 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#E53935_2px,#E53935_4px)] opacity-10" />
+              <div className="relative z-10 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#1A1A1A] text-white transition-colors group-hover/highlight:bg-[#E53935]">
+                    <Flame size={16} fill="currentColor" />
+                  </div>
+                  <h4 className="text-xl font-black uppercase tracking-wide text-[#1A1A1A] transition-colors font-['Archivo'] group-hover/highlight:text-[#E53935]">{card.featured.title}</h4>
+                </div>
+                <span className="border border-zinc-200 bg-white px-2 py-1 text-[10px] font-dot text-zinc-400">{card.featured.label}</span>
+              </div>
+              <p className="relative z-10 text-sm font-medium leading-relaxed text-zinc-600">{card.featured.description}</p>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
 
 function App() {
   const { scrollYProgress } = useScroll();
@@ -194,188 +410,17 @@ function App() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            {/* 1. Idea & Prototyping */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ ...springProps, delay: 0.1 }}
-              className="glass-card glass-card-hover p-8 relative flex flex-col group/card"
-            >
-               <h3 className="text-[#1A1A1A] font-black mb-8 flex items-center justify-between text-lg uppercase font-['Archivo']">
-                 <div className="flex items-center gap-2"><Zap size={20} className="text-[#E53935]" /> 构思与原型</div>
-                 <span className="text-xs font-dot text-zinc-400">PHASE.01</span>
-               </h3>
-               <div className="space-y-6 relative z-10 flex-grow">
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="https://cdn.simpleicons.org/obsidian/1A1A1A" alt="Obsidian" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Obsidian</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">知识库与灵感生发</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="/icons/Stitch.png" alt="Stitch" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform grayscale contrast-200" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Stitch</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">产品原型落地</p>
-                   </div>
-                 </div>
-               </div>
-            </motion.div>
-
-            {/* 2. MVP & Implementation */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ ...springProps, delay: 0.2 }}
-              className="glass-card glass-card-hover p-8 relative flex flex-col"
-            >
-               <h3 className="text-[#1A1A1A] font-black mb-8 flex items-center justify-between text-lg uppercase font-['Archivo']">
-                 <div className="flex items-center gap-2"><TerminalSquare size={20} className="text-[#E53935]" /> 落地实现</div>
-                 <span className="text-xs font-dot text-zinc-400">PHASE.02</span>
-               </h3>
-               <div className="space-y-6 relative z-10 flex-grow">
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="/icons/Opencode.png" alt="OpenCode" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform drop-shadow-sm grayscale contrast-200" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">OpenCode</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">主力终端开发环境</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="/icons/Codex.png" alt="Codex" className="w-6 h-6 object-contain group-hover/item:scale-110 transition-transform grayscale contrast-200" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Codex</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">代码生成与辅助</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="https://cdn.simpleicons.org/anthropic/1A1A1A" alt="Claude Code" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Claude Code</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">思路验证与迭代</p>
-                   </div>
-                 </div>
-               </div>
-            </motion.div>
-
-            {/* 3. Deploy & Operation */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ ...springProps, delay: 0.3 }}
-              className="glass-card glass-card-hover p-8 relative flex flex-col"
-            >
-               <h3 className="text-[#1A1A1A] font-black mb-8 flex items-center justify-between text-lg uppercase font-['Archivo']">
-                 <div className="flex items-center gap-2"><Network size={20} className="text-[#E53935]" /> 部署与上线</div>
-                 <span className="text-xs font-dot text-zinc-400">PHASE.03</span>
-               </h3>
-               <div className="space-y-6 relative z-10 flex-grow">
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="https://cdn.simpleicons.org/github/1A1A1A" alt="GitHub" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">GitHub</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">代码托管与版本控制</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="https://cdn.simpleicons.org/vercel/1A1A1A" alt="Vercel" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Vercel</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">云端一键极速部署</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <img src="https://cdn.simpleicons.org/alibabacloud/1A1A1A" alt="Aliyun" className="w-6 h-6 group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Aliyun</p>
-                     <p className="text-xs font-medium text-zinc-500 mt-1">云端服务器与域名</p>
-                   </div>
-                 </div>
-               </div>
-            </motion.div>
-
-            {/* 4. AI Workflows */}
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ ...springProps, delay: 0.4 }}
-              className="glass-card glass-card-hover p-8 relative overflow-hidden lg:col-span-1 md:col-span-2 flex flex-col"
-            >
-               <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-30 pointer-events-none" />
-               <h3 className="text-[#1A1A1A] font-black mb-8 flex items-center justify-between text-lg uppercase font-['Archivo']">
-                 <div className="flex items-center gap-2"><Flame size={20} className="text-[#E53935]" /> 核心工作流</div>
-                 <span className="text-xs font-dot text-zinc-400">ENGINE.CORE</span>
-               </h3>
-               <div className="space-y-6 relative z-10 flex-grow">
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <Zap size={20} strokeWidth={2} className="text-zinc-600 group-hover/item:text-[#E53935] group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Superpowers</p>
-                     <p className="text-xs font-dot text-zinc-500 mt-1">基于 Skills 的能力赋能流</p>
-                   </div>
-                 </div>
-                 <div className="w-full border-t border-dashed border-zinc-200"></div>
-                 <div className="flex items-center gap-4 group/item cursor-pointer">
-                   <div className="w-12 h-12 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-lg group-hover/item:border-[#E53935] transition-colors shadow-sm">
-                     <Network size={20} strokeWidth={2} className="text-zinc-600 group-hover/item:text-[#E53935] group-hover/item:scale-110 transition-transform" />
-                   </div>
-                   <div>
-                     <p className="font-bold text-zinc-900 group-hover/item:text-[#E53935] transition-colors">Everything Claude</p>
-                     <p className="text-xs font-dot text-zinc-500 mt-1">基于 Subagent 的协作网络</p>
-                   </div>
-                 </div>
-                 
-                 <div className="mt-8 pt-4">
-                   <div className="p-6 rounded-xl border-2 border-[#1A1A1A] bg-zinc-50 group/highlight hover:border-[#E53935] hover:shadow-[4px_4px_0px_0px_rgba(229,57,53,1)] transition-all duration-300 relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-16 h-16 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#E53935_2px,#E53935_4px)] opacity-10" />
-                     <div className="flex items-center justify-between mb-4 relative z-10">
-                       <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 bg-[#1A1A1A] text-white flex items-center justify-center rounded-md group-hover/highlight:bg-[#E53935] transition-colors">
-                           <Flame size={16} fill="currentColor" />
-                         </div>
-                         <h4 className="font-black text-[#1A1A1A] font-['Archivo'] text-xl uppercase tracking-wide group-hover/highlight:text-[#E53935] transition-colors">Get-shit-done</h4>
-                       </div>
-                       <span className="font-dot text-[10px] text-zinc-400 border border-zinc-200 px-2 py-1 bg-white">SYNERGY.SYS</span>
-                     </div>
-                     <p className="text-sm text-zinc-600 leading-relaxed relative z-10 font-medium">
-                       复合型最强工作流，深度融合 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Skills</span> 与 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
-                     </p>
-                   </div>
-                 </div>
-               </div>
-            </motion.div>
-
-          </div>
+          <motion.div
+            variants={revealContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={motionPresets.viewport}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {arsenalCards.map((card) => (
+              <ArsenalMotionCard key={card.phase} card={card} />
+            ))}
+          </motion.div>
         </section>
 
         {/* SELECTED WORKS (BENTO GRID) */}
@@ -623,18 +668,26 @@ function App() {
             {faqs.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
-                <div 
+                <motion.div 
                   key={idx} 
-                  className={`glass-card overflow-hidden transition-all duration-400 border ${isOpen ? 'border-[#E53935] shadow-[6px_6px_0px_0px_rgba(229,57,53,1)] -translate-y-1' : 'hover:border-zinc-400 hover:shadow-[4px_4px_0px_0px_rgba(26,26,26,0.3)]'}`}
+                  animate={{
+                    y: isOpen ? -4 : 0,
+                    boxShadow: isOpen ? "6px 6px 0px 0px rgba(229,57,53,1)" : "4px 4px 0px 0px rgba(26,26,26,0.1)",
+                  }}
+                  transition={motionPresets.softSpring}
+                  className={`glass-card overflow-hidden border transition-colors duration-300 ${isOpen ? 'border-[#E53935]' : 'hover:border-zinc-400'}`}
                 >
                   <button 
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer outline-none bg-white"
+                    className="group/faq relative w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer outline-none bg-white"
                   >
-                    <span className="font-bold text-lg md:text-xl pr-8 text-[#1A1A1A] font-['Space_Grotesk']">{faq.q}</span>
+                    <span className="font-bold text-lg md:text-xl pr-8 text-[#1A1A1A] font-['Space_Grotesk']">
+                      {faq.q}
+                      <span className={`mt-2 block h-[2px] bg-[#E53935] transition-all duration-300 ${isOpen ? 'w-12' : 'w-0 group-hover/faq:w-8'}`} />
+                    </span>
                     <motion.div 
                       animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={motionPresets.softSpring}
                       className={`flex-shrink-0 w-10 h-10 flex items-center justify-center border-2 ${isOpen ? 'border-[#E53935] bg-[#E53935] text-white' : 'border-zinc-300 bg-zinc-50 text-zinc-500'}`}
                     >
                       <ChevronDown size={20} strokeWidth={3} />
@@ -646,16 +699,22 @@ function App() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        transition={{ duration: 0.32, ease: motionPresets.easeOut }}
                         className="bg-zinc-50 border-t border-dashed border-zinc-200"
                       >
-                        <div className="px-6 md:px-8 py-8 text-zinc-600 leading-relaxed font-medium">
+                        <motion.div
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 4 }}
+                          transition={{ duration: 0.24, ease: motionPresets.easeOut }}
+                          className="px-6 md:px-8 py-8 text-zinc-600 leading-relaxed font-medium"
+                        >
                           {faq.a}
-                        </div>
+                        </motion.div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -669,36 +728,56 @@ function App() {
             <div>
               <h2 className="font-['Archivo'] text-6xl md:text-8xl font-black tracking-tighter mb-6 text-[#1A1A1A] drop-shadow-[2px_2px_0_rgba(229,57,53,0.2)] uppercase">LET'S <br/> BUILD.</h2>
               <div className="flex flex-col gap-4 text-zinc-600 font-dot font-bold">
-                <a href="mailto:2315808856@qq.com" className="flex items-center gap-3 hover:text-[#E53935] transition-colors w-max">
-                  <Mail size={20} /> 2315808856@qq.com
-                </a>
-                <a href="tel:15114017934" className="flex items-center gap-3 hover:text-[#E53935] transition-colors w-max">
-                  <Phone size={20} /> +86 15114017934
-                </a>
+                <motion.a
+                  href="mailto:2315808856@qq.com"
+                  className="group/contact flex items-center gap-3 hover:text-[#E53935] transition-colors w-max"
+                  whileHover={{ x: 4 }}
+                  transition={motionPresets.softSpring}
+                >
+                  <Mail size={20} className="transition-transform group-hover/contact:-rotate-6" />
+                  <span className="relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-[#E53935] after:transition-all after:duration-300 group-hover/contact:after:w-full">2315808856@qq.com</span>
+                </motion.a>
+                <motion.a
+                  href="tel:15114017934"
+                  className="group/contact flex items-center gap-3 hover:text-[#E53935] transition-colors w-max"
+                  whileHover={{ x: 4 }}
+                  transition={motionPresets.softSpring}
+                >
+                  <Phone size={20} className="transition-transform group-hover/contact:-rotate-6" />
+                  <span className="relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-[#E53935] after:transition-all after:duration-300 group-hover/contact:after:w-full">+86 15114017934</span>
+                </motion.a>
               </div>
             </div>
 
             <div className="flex flex-col items-start md:items-end gap-6 w-full md:w-auto">
-              <a 
+              <motion.a 
                 href="/王尧-简历.pdf" 
                 download
-                className="group flex items-center justify-between gap-8 bg-white border-2 border-[#1A1A1A] hover:bg-[#E53935] hover:border-[#E53935] hover:text-white px-6 py-4 transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] w-full text-[#1A1A1A]"
+                whileHover={{ x: -3, y: -3, boxShadow: "8px 8px 0px 0px rgba(26,26,26,1)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={motionPresets.softSpring}
+                className="group relative flex items-center justify-between gap-8 overflow-hidden bg-white border-2 border-[#1A1A1A] px-6 py-4 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] w-full text-[#1A1A1A]"
               >
-                <span className="font-bold tracking-wide uppercase font-['Archivo']">Download Resume</span>
-                <span className="w-10 h-10 bg-[#1A1A1A] text-white flex items-center justify-center group-hover:bg-white group-hover:text-[#E53935] transition-colors">
-                  <Download size={18} strokeWidth={3} />
+                <span className="absolute inset-y-0 left-0 w-0 bg-[#E53935] transition-all duration-300 ease-out group-hover:w-full" />
+                <span className="relative z-10 font-bold tracking-wide uppercase transition-colors font-['Archivo'] group-hover:text-white">Download Resume</span>
+                <span className="relative z-10 w-10 h-10 bg-[#1A1A1A] text-white flex items-center justify-center transition-colors group-hover:bg-white group-hover:text-[#E53935]">
+                  <Download size={18} strokeWidth={3} className="transition-transform group-hover:translate-y-0.5" />
                 </span>
-              </a>
-              <a 
+              </motion.a>
+              <motion.a 
                 href="/王尧-作品集.pdf" 
                 download
-                className="group flex items-center justify-between gap-8 bg-white border-2 border-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white px-6 py-4 transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(229,57,53,1)] w-full text-[#1A1A1A]"
+                whileHover={{ x: -3, y: -3, boxShadow: "8px 8px 0px 0px rgba(229,57,53,1)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={motionPresets.softSpring}
+                className="group relative flex items-center justify-between gap-8 overflow-hidden bg-white border-2 border-[#1A1A1A] px-6 py-4 shadow-[4px_4px_0px_0px_rgba(229,57,53,1)] w-full text-[#1A1A1A]"
               >
-                <span className="font-bold tracking-wide uppercase font-['Archivo']">Download Portfolio</span>
-                <span className="w-10 h-10 bg-[#E53935] text-white flex items-center justify-center group-hover:bg-white group-hover:text-[#1A1A1A] transition-colors">
-                  <Download size={18} strokeWidth={3} />
+                <span className="absolute inset-y-0 left-0 w-0 bg-[#1A1A1A] transition-all duration-300 ease-out group-hover:w-full" />
+                <span className="relative z-10 font-bold tracking-wide uppercase transition-colors font-['Archivo'] group-hover:text-white">Download Portfolio</span>
+                <span className="relative z-10 w-10 h-10 bg-[#E53935] text-white flex items-center justify-center transition-colors group-hover:bg-white group-hover:text-[#1A1A1A]">
+                  <Download size={18} strokeWidth={3} className="transition-transform group-hover:translate-y-0.5" />
                 </span>
-              </a>
+              </motion.a>
               <p className="text-zinc-400 text-xs font-dot font-bold mt-4 tracking-widest">&copy; {new Date().getFullYear()} WANG YAO. ALL RIGHTS RESERVED.</p>
             </div>
           </div>
