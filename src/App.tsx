@@ -1,5 +1,5 @@
 import { useState, type MouseEvent, type ReactNode } from 'react';
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Mail, Phone, Download, TerminalSquare, Zap, Network, Flame, ChevronDown } from 'lucide-react';
 
 const faqs = [
@@ -104,14 +104,14 @@ const arsenalCards: ArsenalCard[] = [
     grid: true,
     items: [
       { name: "Superpowers", description: "基于 Skills 的能力赋能流", icon: <Zap size={20} strokeWidth={2} /> },
-      { name: "Everything Claude", description: "基于 Subagent 的协作网络", icon: <Network size={20} strokeWidth={2} /> },
+      { name: "Everything Claude Code", description: "基于 Subagent 的协作网络", icon: <Network size={20} strokeWidth={2} /> },
     ],
     featured: {
       title: "Get-shit-done",
       label: "SYNERGY.SYS",
       description: (
         <>
-          复合型最强工作流，深度融合 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Skills</span> 与 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 group-hover/highlight:border-[#E53935]/50 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
+          复合型最强工作流，深度融合 <span className="text-white font-bold border-b-2 border-zinc-600 transition-colors">Skills</span> 与 <span className="text-white font-bold border-b-2 border-zinc-600 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
         </>
       ),
     },
@@ -145,7 +145,14 @@ function ToolStackItem({ item }: { item: ToolItem }) {
   );
 }
 
-function ArsenalMotionCard({ card }: { card: ArsenalCard }) {
+type MotionCardProps = HTMLMotionProps<"div"> & {
+  children?: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  grid?: boolean;
+};
+
+function MotionCard({ children, className, contentClassName, grid, variants, ...props }: MotionCardProps) {
   const shouldReduceMotion = useReducedMotion();
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
@@ -166,70 +173,72 @@ function ArsenalMotionCard({ card }: { card: ArsenalCard }) {
     rotateY.set((x - 0.5) * 9);
     glareX.set(x * 100);
     glareY.set(y * 100);
+    if (props.onMouseMove) props.onMouseMove(event);
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (event: MouseEvent<HTMLDivElement>) => {
     rotateX.set(0);
     rotateY.set(0);
     glareX.set(50);
     glareY.set(50);
+    if (props.onMouseLeave) props.onMouseLeave(event);
   };
 
   return (
     <motion.div
-      variants={revealItem}
+      variants={variants}
+      {...props}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={shouldReduceMotion ? undefined : { y: -6, boxShadow: "10px 10px 0px 0px rgba(229,57,53,0.95)" }}
-      transition={motionPresets.softSpring}
-      style={{ rotateX: springRotateX, rotateY: springRotateY, transformPerspective: 900 }}
-      className={`glass-card p-8 relative flex flex-col overflow-hidden group/card motion-safe:will-change-transform ${card.className ?? ""}`}
+      transition={props.transition || motionPresets.softSpring}
+      style={{ rotateX: springRotateX, rotateY: springRotateY, transformPerspective: 900, ...props.style }}
+      className={`glass-card relative overflow-hidden group/card motion-safe:will-change-transform ${className ?? ""}`}
     >
-      {card.grid && <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-30 pointer-events-none" />}
+      {grid && <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-30 pointer-events-none" />}
       <motion.div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 z-0"
         style={{ background: glareBackground }}
       />
-      <div className="pointer-events-none absolute left-4 top-4 h-2 w-2 bg-[#E53935]/0 transition-colors group-hover/card:bg-[#E53935]" />
-      <div className="pointer-events-none absolute bottom-4 right-4 h-2 w-2 bg-[#1A1A1A]/0 transition-colors group-hover/card:bg-[#1A1A1A]" />
+      <div className="pointer-events-none absolute left-4 top-4 h-2 w-2 bg-[#E53935]/0 transition-colors group-hover/card:bg-[#E53935] z-0" />
+      <div className="pointer-events-none absolute bottom-4 right-4 h-2 w-2 bg-[#1A1A1A]/0 transition-colors group-hover/card:bg-[#1A1A1A] z-0" />
 
-      <h3 className="relative z-10 mb-8 flex items-center justify-between text-lg font-black uppercase text-[#1A1A1A] font-['Archivo']">
-        <div className="flex items-center gap-2">{card.titleIcon} {card.title}</div>
-        <span className="text-xs font-dot text-zinc-400">{card.phase}</span>
-      </h3>
-
-      <div className="relative z-10 flex-grow space-y-6">
-        {card.items.map((item, idx) => (
-          <div key={item.name}>
-            {idx > 0 && <div className="mb-6 w-full border-t border-dashed border-zinc-200" />}
-            <ToolStackItem item={item} />
-          </div>
-        ))}
-
-        {card.featured && (
-          <div className="mt-8 pt-4">
-            <motion.div
-              className="group/highlight relative overflow-hidden rounded-xl border-2 border-[#1A1A1A] bg-zinc-50 p-6 transition-colors hover:border-[#E53935]"
-              whileHover={{ x: -2, y: -2, boxShadow: "4px 4px 0px 0px rgba(229,57,53,1)" }}
-              transition={motionPresets.softSpring}
-            >
-              <div className="absolute right-0 top-0 h-16 w-16 bg-[repeating-linear-gradient(45deg,transparent,transparent_2px,#E53935_2px,#E53935_4px)] opacity-10" />
-              <div className="relative z-10 mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#1A1A1A] text-white transition-colors group-hover/highlight:bg-[#E53935]">
-                    <Flame size={16} fill="currentColor" />
-                  </div>
-                  <h4 className="text-xl font-black uppercase tracking-wide text-[#1A1A1A] transition-colors font-['Archivo'] group-hover/highlight:text-[#E53935]">{card.featured.title}</h4>
-                </div>
-                <span className="border border-zinc-200 bg-white px-2 py-1 text-[10px] font-dot text-zinc-400">{card.featured.label}</span>
-              </div>
-              <p className="relative z-10 text-sm font-medium leading-relaxed text-zinc-600">{card.featured.description}</p>
-            </motion.div>
-          </div>
-        )}
+      <div className={`relative z-10 w-full h-full flex flex-col ${contentClassName ?? ""}`}>
+        {children}
       </div>
     </motion.div>
+  );
+}
+
+function ArsenalMotionCard({ card }: { card: ArsenalCard }) {
+  return (
+    <MotionCard variants={revealItem} className={card.className ?? ""} contentClassName="p-8" grid={card.grid}>
+      <h3 className="mb-8 flex items-center justify-between text-lg font-black uppercase text-[#1A1A1A] font-['Archivo']">
+        <div className="flex items-center gap-2">{card.titleIcon} {card.title}</div>
+        <span className="font-dot text-xs tracking-widest text-[#E53935]/60">{card.phase}</span>
+      </h3>
+
+      <div className="flex flex-col gap-3 flex-grow z-10">
+        {card.items.map((item, index) => (
+          <ToolStackItem key={index} item={item} />
+        ))}
+      </div>
+
+      {card.featured && (
+        <div className="mt-8 relative z-10">
+          <div className="h-[1px] w-full bg-zinc-200 border-b border-dashed border-zinc-300 mb-6" />
+          <h4 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 bg-[#E53935] inline-block"></span>
+            {card.featured.title}
+          </h4>
+          <div className="bg-[#1A1A1A] text-white p-5 rounded-lg">
+            <p className="font-dot text-xs text-[#E53935] mb-2">{card.featured.label}</p>
+            <p className="text-sm font-medium leading-relaxed opacity-90">{card.featured.description}</p>
+          </div>
+        </div>
+      )}
+    </MotionCard>
   );
 }
 
@@ -356,22 +365,23 @@ function App() {
               </div>
             </motion.div>
 
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ ...springProps, delay: 0.2 }}
-              className="glass-card glass-card-hover p-10 flex flex-col justify-center relative overflow-hidden"
+              className=""
+              contentClassName="p-10 justify-center"
             >
-              <div className="absolute right-0 top-0 w-16 h-16 border-b border-l border-zinc-200" />
-              <div className="absolute left-0 bottom-0 w-16 h-16 border-t border-r border-zinc-200" />
-              <div className="absolute top-4 right-4 text-xs font-dot text-zinc-400">DATA.NODE//01</div>
+              <div className="absolute right-0 top-0 w-16 h-16 border-b border-l border-zinc-200 z-0 pointer-events-none" />
+              <div className="absolute left-0 bottom-0 w-16 h-16 border-t border-r border-zinc-200 z-0 pointer-events-none" />
+              <div className="absolute top-4 right-4 text-xs font-dot text-zinc-400 z-0">DATA.NODE//01</div>
               
-              <h3 className="font-['Archivo'] text-2xl font-black mb-8 uppercase flex items-center gap-3">
+              <h3 className="font-['Archivo'] text-2xl font-black mb-8 uppercase flex items-center gap-3 relative z-10">
                 <div className="w-2 h-2 bg-[#E53935]" /> 教育与荣誉
               </h3>
               
-              <div className="space-y-6">
+              <div className="space-y-6 relative z-10">
                 <div>
                   <div className="flex justify-between items-start mb-1">
                     <h5 className="font-bold text-lg">西南财经大学 - 金融学院</h5>
@@ -396,7 +406,7 @@ function App() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </MotionCard>
           </div>
         </section>
 
@@ -432,14 +442,15 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 auto-rows-[auto]">
             
             {/* Project 1 - SaaS (Expanded) */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={springProps}
-              className="md:col-span-12 group relative rounded-2xl overflow-hidden glass-card glass-card-hover p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12"
+              className="md:col-span-12 group rounded-2xl"
+              contentClassName="p-8 md:p-16 md:flex-row items-center justify-between gap-12"
             >
-              <div className="absolute top-0 left-0 w-2 h-full bg-[#E53935]" />
+              <div className="absolute top-0 left-0 w-2 h-full bg-[#E53935] z-0 pointer-events-none" />
               
               <div className="relative z-10 w-full md:w-[50%]">
                 <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -498,18 +509,19 @@ function App() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </MotionCard>
 
             {/* Project 2 - Scheduling */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ ...springProps, delay: 0.1 }}
-              className="md:col-span-7 group relative rounded-2xl overflow-hidden glass-card glass-card-hover p-8 md:p-12 flex flex-col justify-between"
+              className="md:col-span-7 group rounded-2xl"
+              contentClassName="p-8 md:p-12 justify-between"
             >
-               <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-5 pointer-events-none" />
-               <div className="absolute top-4 right-4 w-2 h-2 bg-[#E53935] animate-ping" />
+               <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-5 pointer-events-none z-0" />
+               <div className="absolute top-4 right-4 w-2 h-2 bg-[#E53935] animate-ping z-0" />
                
                <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
@@ -538,15 +550,16 @@ function App() {
                <a href="https://schedule.asaki.icu" target="_blank" rel="noreferrer" className="absolute bottom-8 right-8 z-10 w-14 h-14 bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-[#E53935] hover:scale-110 transition-all shadow-[4px_4px_0px_0px_rgba(26,26,26,0.2)]">
                   <ArrowUpRight size={24} />
                </a>
-            </motion.div>
+            </MotionCard>
 
             {/* Project 3 - Flight Deal */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ ...springProps, delay: 0.2 }}
-              className="md:col-span-5 group relative rounded-2xl overflow-hidden glass-card glass-card-hover p-8 md:p-10 flex flex-col items-start justify-between gap-8"
+              className="md:col-span-5 group rounded-2xl"
+              contentClassName="p-8 md:p-10 items-start justify-between gap-8"
             >
               
               <div className="relative z-10 w-full">
@@ -570,7 +583,7 @@ function App() {
                   <ArrowUpRight size={20} />
                 </a>
               </div>
-            </motion.div>
+            </MotionCard>
 
           </div>
         </section>
@@ -586,12 +599,13 @@ function App() {
             <div className="absolute left-8 md:left-[39px] top-10 bottom-10 w-[2px] bg-zinc-200 hidden md:block border-l border-dashed border-[#E53935]/50"></div>
 
             {/* Experience 1 */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={springProps}
-              className="glass-card glass-card-hover p-8 md:p-10 relative group md:ml-20"
+              className="md:ml-20"
+              contentClassName="p-8 md:p-10"
             >
               <div className="absolute -left-[45px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#E53935] border-4 border-[#F5F4F0] hidden md:block z-20 shadow-[0_0_0_2px_rgba(26,26,26,1)]"></div>
               
@@ -607,15 +621,16 @@ function App() {
                 <li><strong className="text-[#1A1A1A]">C端商业化增长策略闭环：</strong>针对口头促销造成的用户体感流失，重构转化链路并将促销策略实体化。输出高质量 PRD 与高保真原型，跨部门协调设计与研发资源推进敏捷迭代并进行 A/B Test。上线后跑通全链路，拉动前端付费转化链路互动率提升约 10%，核心渠道付费转化率提升 1.5%（常态付费率 10.5%）。</li>
                 <li><strong className="text-[#1A1A1A]">B端 AI 智能排班效能工具：</strong>深度梳理 150+ 人团队的业务逻辑，将复杂的排班约束抽离为 4 项原子规则，实现了业务逻辑与代码实现的高度解耦；熟练运用 AI Agent 工具独立完成系统架构与代码落地。实现核心管理节点耗时由 3 小时降至 5 分钟内，整体排班效能提升 90% 以上。</li>
               </ul>
-            </motion.div>
+            </MotionCard>
 
             {/* Experience 2 */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ ...springProps, delay: 0.1 }}
-              className="glass-card glass-card-hover p-8 md:p-10 relative group md:ml-20 mt-4"
+              className="md:ml-20 mt-4"
+              contentClassName="p-8 md:p-10"
             >
               <div className="absolute -left-[45px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#1A1A1A] border-4 border-[#F5F4F0] hidden md:block z-20 shadow-[0_0_0_2px_rgba(26,26,26,1)]"></div>
               
@@ -630,15 +645,16 @@ function App() {
                 <li>作为西财团队队长并把控进度，确保了 4 个子赛道调研结果的高质量交付。</li>
                 <li>深度对接 B 端企业，负责建联、沟通及行业研究材料的获取与评审，完成赛道结果整合并交付至前沿金融监管科技研究院。</li>
               </ul>
-            </motion.div>
+            </MotionCard>
 
             {/* Experience 3 */}
-            <motion.div 
+            <MotionCard 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ ...springProps, delay: 0.2 }}
-              className="glass-card glass-card-hover p-8 md:p-10 relative group md:ml-20 mt-4"
+              className="md:ml-20 mt-4"
+              contentClassName="p-8 md:p-10"
             >
               <div className="absolute -left-[45px] top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-[#1A1A1A] border-4 border-[#F5F4F0] hidden md:block z-20 shadow-[0_0_0_2px_rgba(26,26,26,1)]"></div>
               
@@ -653,7 +669,7 @@ function App() {
                 <li>负责行研报告、政策文件等的筛选、信息提取与结构化整合，完成内容撰写与多轮复核。</li>
                 <li>对数字金融行业商业银行细分赛道进行深度调研，产出 20,000+ 字的结构化分析。</li>
               </ul>
-            </motion.div>
+            </MotionCard>
           </div>
         </section>
 
@@ -668,18 +684,19 @@ function App() {
             {faqs.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
-                <motion.div 
+                <MotionCard 
                   key={idx} 
                   animate={{
                     y: isOpen ? -4 : 0,
                     boxShadow: isOpen ? "6px 6px 0px 0px rgba(229,57,53,1)" : "4px 4px 0px 0px rgba(26,26,26,0.1)",
                   }}
                   transition={motionPresets.softSpring}
-                  className={`glass-card overflow-hidden border transition-colors duration-300 ${isOpen ? 'border-[#E53935]' : 'hover:border-zinc-400'}`}
+                  className={`overflow-hidden border transition-colors duration-300 ${isOpen ? 'border-[#E53935]' : 'hover:border-zinc-400'}`}
+                  contentClassName="flex flex-col"
                 >
                   <button 
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="group/faq relative w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer outline-none bg-white"
+                    className="group/faq relative w-full flex items-center justify-between p-6 md:p-8 text-left cursor-pointer outline-none z-10"
                   >
                     <span className="font-bold text-lg md:text-xl pr-8 text-[#1A1A1A] font-['Space_Grotesk']">
                       {faq.q}
@@ -700,13 +717,13 @@ function App() {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.32, ease: motionPresets.easeOut }}
-                        className="bg-zinc-50 border-t border-dashed border-zinc-200"
+                        className="bg-zinc-50/80 border-t border-dashed border-zinc-200 z-10"
                       >
-                        <motion.div
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 4 }}
-                          transition={{ duration: 0.24, ease: motionPresets.easeOut }}
+                        <motion.div 
+                          initial={{ y: -10, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -10, opacity: 0 }}
+                          transition={{ duration: 0.3, delay: 0.1 }}
                           className="px-6 md:px-8 py-8 text-zinc-600 leading-relaxed font-medium"
                         >
                           {faq.a}
@@ -714,7 +731,7 @@ function App() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </MotionCard>
               );
             })}
           </div>
