@@ -157,15 +157,15 @@ const arsenalCards: ArsenalCard[] = [
     className: "lg:col-span-1 md:col-span-2",
     grid: true,
     items: [
-      { name: "Superpowers", description: "基于 Skills 的能力赋能流", icon: <Zap size={20} strokeWidth={2} /> },
-      { name: "Everything Claude Code", description: "基于 Subagent 的协作网络", icon: <Network size={20} strokeWidth={2} /> },
+      { name: "Superpowers", description: "基于 Skills 的能力赋能流", icon: <Zap width={18} height={24} strokeWidth={2} /> },
+      { name: "Everything Claude Code", description: "基于 Subagent 的协作网络", icon: <Network width={28} height={24} strokeWidth={2} /> },
     ],
     featured: {
       title: "Get-shit-done",
       label: "SYNERGY.SYS",
       description: (
         <>
-          复合型最强工作流，深度融合 <span className="text-white font-bold border-b-2 border-zinc-600 transition-colors">Skills</span> 与 <span className="text-white font-bold border-b-2 border-zinc-600 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
+          复合型最强工作流，深度融合 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 transition-colors">Skills</span> 与 <span className="text-[#1A1A1A] font-bold border-b-2 border-zinc-300 transition-colors">Subagents</span>，专为长期复杂项目的敏捷开发与维护打造。
         </>
       ),
     },
@@ -286,9 +286,13 @@ function ArsenalMotionCard({ card }: { card: ArsenalCard }) {
             <span className="w-1.5 h-1.5 bg-[#E53935] inline-block"></span>
             {card.featured.title}
           </h4>
-          <div className="bg-[#1A1A1A] text-white p-5 rounded-lg">
+          <div className="bg-zinc-50 border-2 border-zinc-200 p-5 rounded-xl relative shadow-inner">
+            <div className="absolute top-2 left-2 w-1 h-1 bg-zinc-300"></div>
+            <div className="absolute top-2 right-2 w-1 h-1 bg-zinc-300"></div>
+            <div className="absolute bottom-2 left-2 w-1 h-1 bg-zinc-300"></div>
+            <div className="absolute bottom-2 right-2 w-1 h-1 bg-zinc-300"></div>
             <p className="font-dot text-xs text-[#E53935] mb-2">{card.featured.label}</p>
-            <p className="text-sm font-medium leading-relaxed opacity-90">{card.featured.description}</p>
+            <p className="text-sm font-medium leading-relaxed text-zinc-700">{card.featured.description}</p>
           </div>
         </div>
       )}
