@@ -1,4 +1,4 @@
-import { useState, type MouseEvent, type ReactNode } from 'react';
+import { useState, useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
 import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, AnimatePresence, type HTMLMotionProps } from 'framer-motion';
 import { ArrowRight, ArrowUpRight, Mail, Phone, Download, TerminalSquare, Zap, Network, Flame, ChevronDown } from 'lucide-react';
 
@@ -13,9 +13,63 @@ const faqs = [
   },
   {
     q: "评审或开发中产生较大分歧，如何推进与解决？",
-    a: "采取“正式会议 + 颗粒度对齐”机制。召集各部门代表坦诚相见，合盘托出需求与资源限制；进行多轮细节探讨，对齐颗粒度并寻找折中方案。在协调各方诉求的前提下，推动项目拿到能力范围内的最佳结果。"
+    a: `采取"正式会议 + 颗粒度对齐"机制。召集各部门代表坦诚相见，合盘托出需求与资源限制；进行多轮细节探讨，对齐颗粒度并寻找折中方案。在协调各方诉求的前提下，推动项目拿到能力范围内的最佳结果。`
   }
 ];
+
+function CountUpNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !hasAnimated) {
+          setHasAnimated(true);
+          const duration = 2000;
+          const startTime = performance.now();
+          const startValue = 0;
+
+          const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.floor(startValue + (value - startValue) * easeProgress);
+            setDisplayValue(currentValue);
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              setDisplayValue(value);
+            }
+          };
+
+          requestAnimationFrame(animate);
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [value, hasAnimated]);
+
+  return (
+    <div ref={ref}>
+      {displayValue.toLocaleString()}{suffix}
+    </div>
+  );
+}
 
 const motionPresets = {
   easeOut: [0.16, 1, 0.3, 1] as const,
@@ -270,12 +324,12 @@ function App() {
       <nav className="fixed top-0 left-0 right-0 z-50 py-6 px-8 md:px-16 flex justify-between items-center nav-blur border-b border-zinc-200">
         <span className="font-['Archivo'] font-bold text-xl tracking-tighter text-[#1A1A1A]">WANG<span className="text-[#E53935]">.YAO</span></span>
         <div className="flex gap-8 text-sm font-bold tracking-wide hidden md:flex uppercase text-zinc-600">
-          <a href="#about" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">About</a>
-          <a href="#arsenal" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">Arsenal</a>
-          <a href="#works" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">Works</a>
-          <a href="#experience" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">Experience</a>
-          <a href="#philosophy" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">Philosophy</a>
-          <a href="#contact" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">Contact</a>
+          <a href="#about" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">关于</a>
+          <a href="#arsenal" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">技术栈</a>
+          <a href="#works" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">作品</a>
+          <a href="#experience" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">经历</a>
+          <a href="#philosophy" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">方法论</a>
+          <a href="#contact" className="hover:text-[#E53935] hover:-translate-y-0.5 transition-all">联系</a>
         </div>
       </nav>
 
@@ -450,6 +504,7 @@ function App() {
               className="md:col-span-12 group rounded-2xl"
               contentClassName="p-8 md:p-16 md:flex-row items-center justify-between gap-12"
             >
+              <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-5 pointer-events-none z-0" />
               <div className="absolute top-0 left-0 w-2 h-full bg-[#E53935] z-0 pointer-events-none" />
               
               <div className="relative z-10 w-full md:w-[50%]">
@@ -481,19 +536,19 @@ function App() {
                   <div className="absolute bottom-2 right-2 w-1 h-1 bg-zinc-300"></div>
                   
                   <div>
-                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']">60,000+</div>
+                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']"><CountUpNumber value={150000} suffix="+" /></div>
                     <div className="text-xs text-zinc-500 font-dot mt-2">全网曝光</div>
                   </div>
                   <div>
-                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']">6,000+</div>
-                    <div className="text-xs text-zinc-500 font-dot mt-2">赞藏互动</div>
+                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']"><CountUpNumber value={10000} suffix="+" /></div>
+                    <div className="text-xs text-zinc-500 font-dot mt-2">用户互动</div>
                   </div>
                   <div>
-                    <div className="text-3xl md:text-4xl font-black text-[#E53935] font-['Archivo'] drop-shadow-sm">130+</div>
+                    <div className="text-3xl md:text-4xl font-black text-[#E53935] font-['Archivo'] drop-shadow-sm"><CountUpNumber value={150} suffix="+" /></div>
                     <div className="text-xs text-zinc-500 font-dot mt-2">付费订单</div>
                   </div>
                   <div>
-                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']">¥ 2,000+</div>
+                    <div className="text-3xl md:text-4xl font-black text-[#1A1A1A] font-['Archivo']"><CountUpNumber value={2700} suffix="+" /></div>
                     <div className="text-xs text-zinc-500 font-dot mt-2">出单金额</div>
                   </div>
                 </div>
@@ -519,9 +574,8 @@ function App() {
               transition={{ ...springProps, delay: 0.1 }}
               className="md:col-span-7 group rounded-2xl"
               contentClassName="p-8 md:p-12 justify-between"
-            >
-               <div className="absolute top-0 right-0 w-full h-full bg-crosshair-grid opacity-5 pointer-events-none z-0" />
-               <div className="absolute top-4 right-4 w-2 h-2 bg-[#E53935] animate-ping z-0" />
+             >
+                <div className="absolute top-4 right-4 w-2 h-2 bg-[#E53935] animate-ping z-0" />
                
                <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-6">
@@ -537,12 +591,12 @@ function App() {
                 
                 <div className="flex items-end gap-6">
                   <div>
-                    <div className="text-4xl md:text-5xl font-black text-[#1A1A1A] font-['Archivo'] mb-1">90%+</div>
+                    <div className="text-4xl md:text-5xl font-black text-[#E53935] font-['Archivo'] mb-1"><CountUpNumber value={90} suffix="%" /></div>
                     <div className="text-xs text-zinc-500 font-dot">排班效能提升</div>
                   </div>
                   <div>
-                    <div className="text-4xl md:text-5xl font-black text-[#E53935] font-['Archivo'] mb-1">5m</div>
-                    <div className="text-xs text-zinc-500 font-dot">排班管理耗时</div>
+                    <div className="text-4xl md:text-5xl font-black text-[#1A1A1A] font-['Archivo'] mb-1"><CountUpNumber value={5} suffix="m" /></div>
+                    <div className="text-xs text-zinc-500 font-dot">3h → 5m</div>
                   </div>
                 </div>
                </div>
