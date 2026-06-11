@@ -562,7 +562,7 @@ function App() {
                     <span className="text-sm tracking-widest uppercase">小红书主页</span>
                     <ArrowUpRight size={18} />
                   </a>
-                  <a href="https://paiban.asaki.icu" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] hover:bg-[#E53935] hover:border-[#E53935] hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(229,57,53,1)] font-bold">
+                  <a href="https://paiban.asaki.qzz.io" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-6 py-3 bg-[#1A1A1A] text-white border-2 border-[#1A1A1A] hover:bg-[#E53935] hover:border-[#E53935] hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(229,57,53,1)] font-bold">
                     <span className="text-sm tracking-widest uppercase">访问网站</span>
                     <ArrowUpRight size={18} />
                   </a>
@@ -605,7 +605,7 @@ function App() {
                 </div>
                </div>
 
-               <a href="https://schedule.asaki.icu" target="_blank" rel="noreferrer" className="absolute bottom-8 right-8 z-10 w-14 h-14 bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-[#E53935] hover:scale-110 transition-all shadow-[4px_4px_0px_0px_rgba(26,26,26,0.2)]">
+               <a href="https://schedule.asaki.qzz.io" target="_blank" rel="noreferrer" className="absolute bottom-8 right-8 z-10 w-14 h-14 bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-[#E53935] hover:scale-110 transition-all shadow-[4px_4px_0px_0px_rgba(26,26,26,0.2)]">
                   <ArrowUpRight size={24} />
                </a>
             </MotionCard>
@@ -637,7 +637,7 @@ function App() {
               </div>
 
               <div className="relative z-10 self-start mt-2">
-                <a href="https://hangyi.asaki.icu" target="_blank" rel="noreferrer" className="w-12 h-12 bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-[#E53935] transition-all hover:scale-110 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.2)]">
+                <a href="https://hangyi.asaki.qzz.io" target="_blank" rel="noreferrer" className="w-12 h-12 bg-[#1A1A1A] text-white flex items-center justify-center hover:bg-[#E53935] transition-all hover:scale-110 shadow-[4px_4px_0px_0px_rgba(26,26,26,0.2)]">
                   <ArrowUpRight size={20} />
                 </a>
               </div>
